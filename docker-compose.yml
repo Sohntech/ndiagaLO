@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  app:
+    image: myapp
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    volumes:
+      - .:/var/www
+      - ./storage/Firebase/gestion-scolaire-75b42-firebase-adminsdk-t4mkq-71dad755d5.json:/var/www/storage/Firebase/gestion-scolaire-75b42-firebase-adminsdk-t4mkq-71dad755d5.json
+    networks:
+      - laravel
+    environment:
+      APP_NAME: Laravel
+      APP_ENV: local
+      APP_KEY: base64:YL1mNam98w5Ks98+7lKMbn3tUiWWYbijuIbnQc/JdHA
+      APP_DEBUG: "true"
+      APP_TIMEZONE: UTC
+      APP_URL: http://localhost
+      APP_LOCALE: en
+      APP_FALLBACK_LOCALE: en
+      APP_FAKER_LOCALE: en_US
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_DATABASE: Projet_Scolaire
+      DB_USERNAME: diedhiouousseynou53
+      DB_PASSWORD: re@louZ01
+      SESSION_DRIVER: database
+      CACHE_STORE: database
+      REDIS_HOST: "127.0.0.1"
+      REDIS_PORT: "6379"
+      MAIL_MAILER: smtp
+      MAIL_HOST: smtp.gmail.com
+      MAIL_PORT: "587"
+      MAIL_USERNAME: diedhiouousseynou53@gmail.com
+      MAIL_PASSWORD: "dilj udsg pntq tfjz"
+      MAIL_ENCRYPTION: tls
+      FIREBASE_DATABASE_URL: https://gestion-scolaire-75b42-default-rtdb.firebaseio.com/
+      FIREBASE_CREDENTIALS: /var/www/storage/Firebase/gestion-scolaire-75b42-firebase-adminsdk-t4mkq-71dad755d5.json
+      CLOUDINARY_CLOUD_NAME: djwe1la51
+      CLOUDINARY_API_KEY: "275749594327978"
+      CLOUDINARY_API_SECRET: UHQpH4PF4sePFpeGdihCkNwpaoc
+      MONGODB_DATABASE : Cluster0
+      MONGODB_USERNAME : diedhiouousseynou53
+      MONGODB_PASSWORD : J8R9z71wduUPK3k6
+
+  webserver:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    volumes:
+      - .:/var/www
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "9321:80"
+    depends_on:
+      - app
+      - db
+    networks:
+      - laravel
+
+  db:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: re@louZ01
+      MYSQL_DATABASE: Projet_Scolaire
+      MYSQL_USER: diedhiouousseynou53
+      MYSQL_PASSWORD: re@louZ01
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - laravel
+
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: projet_scolaire
+      POSTGRES_USER: diedhiouousseynou53
+      POSTGRES_PASSWORD: re@louZ01
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - laravel
+
+networks:
+  laravel:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  postgres_data:
