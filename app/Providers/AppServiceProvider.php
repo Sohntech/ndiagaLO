@@ -14,8 +14,8 @@ use App\Models\PromotionFirebase;
 use App\Services\PromotionService;
 use App\Models\ReferentielFirebase;
 use App\Services\ApprenantsService;
-use App\Observers\ApprenantObserver;
 use App\Repositories\UserRepository;
+use App\Services\ReferentielService;
 use App\Services\LocalStorageService;
 use Illuminate\Support\ServiceProvider;
 use App\Interfaces\UserServiceInterface;
@@ -31,6 +31,7 @@ use App\Services\CloudStorageServiceFactory;
 use App\Interfaces\PromotionServiceInterface;
 use App\Interfaces\ApprenantsServiceInterface;
 use App\Interfaces\PromotionFirebaseInterface;
+use App\Interfaces\ReferentielServiceInterface;
 use App\Interfaces\CloudStorageServiceInterface;
 use App\Interfaces\PromotionRepositoryInterface;
 use App\Interfaces\ReferentielFirebaseInterface;
@@ -56,7 +57,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(ReferentielRepositoryInterface::class, ReferentielRepository::class);
-        // $this->app->bind(ReferentielServiceInterface::class, ReferentielService::class);
+        $this->app->bind(ReferentielServiceInterface::class, ReferentielService::class);
         $this->app->bind(ReferentielFirebaseInterface::class, ReferentielFirebase::class);
         $this->app->bind('referentiel.facade', function ($app) {
             return $app->make(ReferentielFirebaseInterface::class);
@@ -90,7 +91,6 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
 
-        // Liens pour Firebase
         $this->app->singleton(Storage::class, function () {
             $factory = (new Factory)->withServiceAccount(env('FIREBASE_CREDENTIALS'));
             return $factory->createStorage();

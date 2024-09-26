@@ -37,8 +37,7 @@ abstract class FirebaseModel
 
     public function all()
     {
-        $result = $this->reference->getValue();
-        return $result === null ? [] : $result;
+        return $this->reference->getValue();
     }
 
     public function find($id)
@@ -253,5 +252,10 @@ abstract class FirebaseModel
             default:
                 return false;
         }
+    }
+
+    public function getChild($childPath)
+    {
+        return $this->reference->getChild($childPath);
     }
 }

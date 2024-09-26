@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\ApprenantsController;
+use App\Http\Controllers\ReferentielController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/refresh', [AuthController::class, 'refresh']);
@@ -36,5 +37,15 @@ Route::delete('apprenants/{id}/force', [ApprenantsController::class, 'forceDelet
 Route::get('apprenants/inactive', [ApprenantsController::class, 'inactive']);
 Route::post('apprenants/relance', [ApprenantsController::class, 'sendRelance']);
 Route::post('apprenants/{id}/relance', [ApprenantsController::class, 'sendRelanceToOne']);
+
+Route::apiResource('referentiels', ReferentielController::class);
+// Route::get('referentiels', [ReferentielController::class, 'index']);
+// Route::post('referentiels', [ReferentielController::class, 'store']);
+// Route::get('referentiels/{id}', [ReferentielController::class, 'show']);
+// Route::patch('referentiels/{id}', [ReferentielController::class, 'update']);
+// Route::delete('/v1/referentiels/{id}', [ReferentielController::class, 'destroy']);
+// Route::delete('referentiels/{id}', [ReferentielController::class, 'delete']);
+Route::get('archive/referentiels', [ReferentielController::class, 'archived']);
+Route::get('referentiels/export', [ReferentielController::class, 'export']);
 
 // });
