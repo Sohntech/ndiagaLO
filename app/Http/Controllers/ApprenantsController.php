@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Interfaces\ApprenantsServiceInterface;
 
 class ApprenantsController extends Controller
@@ -62,7 +64,17 @@ class ApprenantsController extends Controller
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls',
         ]);
-        return $this->service->importApprenants($request->file('file'));
+
+        $result = $this->service->importApprenants($request->file('file'));
+
+        if ($result['success']) {
+            return response()->json(['message' => 'Import successful'], 200);
+        } else {
+            return response()->json([
+                'message' => 'Some rows failed to import',
+                'failed_file' => $result['failed_file']
+            ], 422);
+        }
     }
 
     public function inactive()
@@ -80,4 +92,18 @@ class ApprenantsController extends Controller
     {
         return $this->service->sendRelanceToInactiveApprenants([$id]);
     }
+
+    public function changePassword(Request $request)
+{
+    $request->validate([
+        'password' => 'required|string|min:8|confirmed',
+    ]);
+
+    $user = Auth::user();
+    $user->password = Hash::make($request->password);
+    $user->password_changed = true;
+
+    return $user;
+}
+
 }

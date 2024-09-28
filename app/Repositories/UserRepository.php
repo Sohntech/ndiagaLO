@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\UserMysql;
+use App\Models\User;
 use App\Events\UserCreated;
 use App\Facades\UserFirebase;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +36,7 @@ class UserRepository implements UserRepositoryInterface
         $originalFileName = $data['photo']->getClientOriginalName();
         $localPath = $this->LocalStorageService->storeImageLocally('images/users', $originalFileName);
         $data['photo'] = $localPath;
-        $userMysql = UserMysql::create($data);
+        $userMysql = User::create($data);
         $firebaseUserId = UserFirebase::create($data);
         $data = UserFirebase::find($firebaseUserId);
         $userMysql->id = $firebaseUserId;
@@ -55,7 +55,7 @@ class UserRepository implements UserRepositoryInterface
     public function updateUser(string $id, array $data): ?array
     {
         DB::beginTransaction();
-        $userMysql = UserMysql::find($id);
+        $userMysql = User::find($id);
         if ($userMysql) {
             $userMysql->update($data);
         }
@@ -72,7 +72,7 @@ class UserRepository implements UserRepositoryInterface
     public function deleteUser(string $id): bool
     {
         DB::beginTransaction();
-        $deletedMysql = UserMysql::destroy($id);
+        $deletedMysql = User::destroy($id);
         $deletedFirebase = UserFirebase::delete($id);
         DB::commit();
         return $deletedMysql && $deletedFirebase;

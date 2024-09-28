@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\UserMysql;
+use App\Models\User;
 use App\Facades\UserFirebase;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Log;
@@ -34,7 +34,7 @@ class UploadProfilePictureJob implements ShouldQueue
             throw new \Exception("Le fichier image n'existe pas à ce chemin : {$this->photoPath}");
         }
 
-        $userMysql = UserMysql::findOrFail($this->userMysqlId);
+        $userMysql = User::findOrFail($this->userMysqlId);
         
         // Créez une instance d'UploadedFile
         $photo = new \Illuminate\Http\UploadedFile(

@@ -2,12 +2,14 @@
 
 namespace App\Imports;
 
-use App\Interfaces\ApprenantsRepositoryInterface;
-use Maatwebsite\Excel\Validators\Failure;
+use App\Notifications\WelcomeApprenant;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Validators\Failure;
+use Illuminate\Support\Facades\Notification;
+use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
+use App\Interfaces\ApprenantsRepositoryInterface;
 
 class ApprenantsImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure
 {
@@ -21,14 +23,17 @@ class ApprenantsImport implements ToModel, WithHeadingRow, WithValidation, Skips
 
     public function model(array $row)
     {
-        return $this->repository->create([
+        $apprenant = $this->repository->create([
             'nom' => $row['nom'],
             'prenom' => $row['prenom'],
             'email' => $row['email'],
             'date_naissance' => $row['date_naissance'],
             'sexe' => $row['sexe'],
             'referentiel' => $row['referentiel'],
+            'password' => 'Passer@123',
         ]);
+        Notification::send($apprenant, new WelcomeApprenant($apprenant));
+        return $apprenant;
     }
 
     public function rules(): array
@@ -50,6 +55,6 @@ class ApprenantsImport implements ToModel, WithHeadingRow, WithValidation, Skips
 
     public function failures()
     {
-        return $this->failures;
+        return collect($this->failures);
     }
 }

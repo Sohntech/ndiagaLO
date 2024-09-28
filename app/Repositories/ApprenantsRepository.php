@@ -2,7 +2,9 @@
 
 namespace App\Repositories;
 
+use Illuminate\Support\Str;
 use App\Facades\ApprenantsFacade;
+use Illuminate\Support\Facades\Hash;
 use App\Services\LocalStorageService;
 use App\Interfaces\ApprenantsRepositoryInterface;
 
@@ -16,11 +18,18 @@ class ApprenantsRepository implements ApprenantsRepositoryInterface
     
     public function create(array $data)
     {
-        $originalFileName = $data['photo']->getClientOriginalName();
-        $localPath = $this->LocalStorageService->storeImageLocally('images/apprenants', $originalFileName);
-        $data['photo_couverture'] = $localPath;
+        if (isset($data['photo'])) {
+            $originalFileName = $data['photo']->getClientOriginalName();
+            $localPath = $this->LocalStorageService->storeImageLocally('images/apprenants', $originalFileName);
+            $data['photo_couverture'] = $localPath;
+        }
+
         $data['matricule'] = ApprenantsFacade::genererMatricule();
         $data['code_qr'] = ApprenantsFacade::genererCodeQR();
+        $data['role_id'] = config('constants.roles.APPRENANT');
+        $data['password'] = Hash::make(Str::random(10));
+        $data['password_changed'] = false;
+
         $apprenant = ApprenantsFacade::create($data);
         return $apprenant;
     }

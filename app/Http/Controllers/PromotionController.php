@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\EtatPromotion;
 use Illuminate\Http\Request;
-use App\Http\Requests\UpdatePromotionRequest;
 use App\Interfaces\PromotionServiceInterface;
 
 class PromotionController extends Controller
@@ -31,27 +30,22 @@ class PromotionController extends Controller
         return response()->json($this->promotionService->getPromotionById($id));
     }
 
-    public function update(UpdatePromotionRequest $request, $id)
+    public function update(Request $request, $id)
     {
-        $promotion = $this->promotionService->updatePromotion($id, $request->validated());
+        $promotion = $this->promotionService->updatePromotion($id, $request->all());
         return response()->json($promotion);
     }
 
     public function changeStatus($id, Request $request)
     {
-        // Valide l'entrée pour s'assurer que l'état est l'une des valeurs autorisées
         $request->validate([
-            'etat' => 'required|in:actif,inactif,cloturer', // Ajoutez toutes les valeurs possibles ici
+            'etat' => 'required|in:actif,inactif,cloturer',
         ]);
-
-        // Convertir la chaîne en instance d'énumération
-        $newStatus = EtatPromotion::from($request->input('etat')); // Cela va lever une exception si l'état n'est pas valide
+        $newStatus = EtatPromotion::from($request->input('etat'));
 
         $promotion = $this->promotionService->changePromotionStatus($id, $newStatus);
         return response()->json($promotion);
     }
-
-
 
     public function getStats($id)
     {
@@ -70,13 +64,17 @@ class PromotionController extends Controller
 
     public function updateReferentiels($id, Request $request)
     {
-        $request->validate([
+        $request->all([
             'referentiels' => 'required|array',
             'referentiels.*' => 'exists:referentiels,id',
         ]);
-
         $result = $this->promotionService->updatePromotionReferentiels($id, $request->input('referentiels'));
-
         return response()->json($result);
+    }
+
+    public function getPromotionEncours()
+    {
+        $promotion = $this->promotionService->getPromotionEncours();
+        return response()->json($promotion);
     }
 }

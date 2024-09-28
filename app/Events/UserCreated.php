@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\UserMysql;
+use App\Models\User;
 use Illuminate\Foundation\Events\Dispatchable;
 
 class UserCreated
@@ -12,7 +12,7 @@ class UserCreated
     public $userMysql;
     public $userFirebase;
 
-    public function __construct(UserMysql $userMysql, $userFirebase)
+    public function __construct(User $userMysql, $userFirebase)
     {
         $this->userMysql = $userMysql;
         $this->userFirebase = $userFirebase;

@@ -18,22 +18,30 @@ class ReferentielService implements ReferentielServiceInterface
     public function createReferentiel(array $data)
     {
         $data['etat'] = EtatReferentiel::ACTIF->value;
-        if (isset($data['competences']) && is_array($data['competences'])) {
-            $competences = array_map(function ($competence) {
+
+        $competences = isset($data['competences']) && is_array($data['competences'])
+            ? array_map(function ($competence) {
                 return [
                     'titre' => trim($competence['titre']),
                     'description' => trim($competence['description']),
+                    'modules' => $competence['modules'] ?? []
                 ];
-            }, $data['competences']);
-        } else {
-            $competences = [];
+            }, $data['competences'])
+            : [];
+
+        $referentielId = $this->referentielRepository->create($data);
+        if ($referentielId) {
+            // Ajoutez les compétences au référentiel
+            foreach ($competences as $competence) {
+                $this->referentielRepository->addCompetenceToReferentiel($referentielId, $competence);
+            }
+            // Récupérez les compétences en utilisant la méthode modifiée
+            $referentielCompetences = $this->referentielRepository->getCompetencesByReferentielId($referentielId);
+
+            return $referentielCompetences;
         }
-        $referentiel = $this->referentielRepository->create($data);
-        foreach ($competences as $competence) {
-            $this->referentielRepository->addCompetenceToReferentiel($referentiel['id'], $competence);
-        }
-        $referentiel['competences'] = $this->referentielRepository->getCompetencesByReferentielId($referentiel['id']);
-        return $referentiel;
+
+        return null;
     }
 
 
@@ -84,5 +92,45 @@ class ReferentielService implements ReferentielServiceInterface
         return array_filter($referentiels, function ($referentiel) {
             return $referentiel['etat'] === 'archivé';
         });
+    }
+
+    public function addCompetenceToReferentiel($referentielId, array $competenceData)
+    {
+        $this->referentielRepository->addCompetenceToReferentiel($referentielId, $competenceData);
+    }
+
+    public function updateCompetence($competenceId, array $updatedData)
+    {
+        $this->referentielRepository->updateCompetence($competenceId, $updatedData);
+    }
+
+    // Méthode pour supprimer une compétence
+    public function deleteCompetence($competenceId)
+    {
+        $this->referentielRepository->deleteCompetence($competenceId);
+    }
+
+    // Méthode pour ajouter un module à une compétence
+    public function addModuleToCompetence($competenceId, array $moduleData)
+    {
+        $this->referentielRepository->addModuleToCompetence($competenceId, $moduleData);
+    }
+
+    // Méthode pour lister les modules d'une compétence
+    public function getModulesByCompetenceId($competenceId)
+    {
+        return $this->referentielRepository->getModulesByCompetenceId($competenceId);
+    }
+
+    // Méthode pour modifier un module
+    public function updateModule($moduleId, array $updatedData)
+    {
+        $this->referentielRepository->updateModule($moduleId, $updatedData);
+    }
+
+    // Méthode pour supprimer un module
+    public function deleteModule($moduleId)
+    {
+        $this->referentielRepository->deleteModule($moduleId);
     }
 }

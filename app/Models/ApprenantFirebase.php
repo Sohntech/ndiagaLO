@@ -8,7 +8,7 @@ use App\Interfaces\ApprenantsModelInterface;
 
 class ApprenantFirebase extends UserFirebase implements ApprenantsModelInterface
 {
-    protected $table = 'apprenants';
+    protected $path = 'apprenants';
 
     protected $fillable = [
         'nom',
@@ -18,6 +18,7 @@ class ApprenantFirebase extends UserFirebase implements ApprenantsModelInterface
         'adresse',
         'telephone',
         'password',
+        'password_changed',
         'photo_couverture',
         'referentiel',
         'statut'

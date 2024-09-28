@@ -10,24 +10,20 @@ use App\Http\Controllers\ReferentielController;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/refresh', [AuthController::class, 'refresh']);
 
-Route::apiResource('/users', UserController::class);
 // Route::middleware(['auth:api', 'blacklisted'])->group(function () {
 Route::post('/logout', [AuthController::class, 'logout']);
-
+    
+Route::apiResource('/users', UserController::class);
 Route::get('/auth/{provider}', [AuthController::class, 'redirectToProvider']);
 Route::get('/auth/{provider}/callback', [AuthController::class, 'handleProviderCallback']);
 
-
 Route::apiResource('promotions', PromotionController::class);
-//Route::apiResource('referentiels', ReferentielController::class);
-
 Route::get('promotions/encours', [PromotionController::class, 'getPromotionEncours']);
 Route::get('promotions/{id}/stats', [PromotionController::class, 'getStats']);
 Route::patch('promotions/{id}/etat', [PromotionController::class, 'changeStatus']);
 Route::patch('promotions/{id}/cloturer', [PromotionController::class, 'cloturer']);
 Route::patch('promotions/{id}/referentiels', [PromotionController::class, 'updateReferentiels']);
 Route::get('promotions/export/{format}', [PromotionController::class, 'export']);
-
 
 Route::apiResource('apprenants', ApprenantsController::class);
 Route::post('apprenants/import', [ApprenantsController::class, 'import']);
@@ -37,15 +33,19 @@ Route::delete('apprenants/{id}/force', [ApprenantsController::class, 'forceDelet
 Route::get('apprenants/inactive', [ApprenantsController::class, 'inactive']);
 Route::post('apprenants/relance', [ApprenantsController::class, 'sendRelance']);
 Route::post('apprenants/{id}/relance', [ApprenantsController::class, 'sendRelanceToOne']);
+Route::get('apprenants/change-password', [ApprenantsController::class, 'showChangePasswordForm'])->name('change-password');
+Route::post('apprenants/change-password', [ApprenantsController::class, 'changePassword']);
 
 Route::apiResource('referentiels', ReferentielController::class);
-// Route::get('referentiels', [ReferentielController::class, 'index']);
-// Route::post('referentiels', [ReferentielController::class, 'store']);
-// Route::get('referentiels/{id}', [ReferentielController::class, 'show']);
-// Route::patch('referentiels/{id}', [ReferentielController::class, 'update']);
-// Route::delete('/v1/referentiels/{id}', [ReferentielController::class, 'destroy']);
-// Route::delete('referentiels/{id}', [ReferentielController::class, 'delete']);
 Route::get('archive/referentiels', [ReferentielController::class, 'archived']);
 Route::get('referentiels/export', [ReferentielController::class, 'export']);
+Route::post('/referentiels', [ReferentielController::class, 'store'])->name('referentiels.store');
+Route::post('/referentiels/{referentielId}/competences', [ReferentielController::class, 'addCompetenceToReferentiel'])->name('referentiels.competences.add');
+Route::put('/competences/{competenceId}', [ReferentielController::class, 'updateCompetence'])->name('competences.update');
+Route::delete('/competences/{competenceId}', [ReferentielController::class, 'deleteCompetence'])->name('competences.delete');
+Route::post('/competences/{competenceId}/modules', [ReferentielController::class, 'addModuleToCompetence'])->name('competences.modules.add');
+Route::get('/competences/{competenceId}/modules', [ReferentielController::class, 'getModulesByCompetenceId'])->name('competences.modules.list');
+Route::put('/modules/{moduleId}', [ReferentielController::class, 'updateModule'])->name('modules.update');
+Route::delete('/modules/{moduleId}', [ReferentielController::class, 'deleteModule'])->name('modules.delete');
 
 // });

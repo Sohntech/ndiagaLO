@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\UserMysql;
+use App\Models\User;
 use Cloudinary\Cloudinary;
 use App\Models\UserFirebase;
 use Kreait\Firebase\Factory;
@@ -66,7 +66,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ApprenantsServiceInterface::class, ApprenantsService::class);
         $this->app->bind(ApprenantsModelInterface::class, ApprenantFirebase::class);
         $this->app->bind(ApprenantsRepositoryInterface::class, ApprenantsRepository::class);
-        $this->app->bind('apprenants', function ($app) {
+        $this->app->bind('apprenant.facade', function ($app) {
             return $app->make(ApprenantsModelInterface::class);
         });
 
@@ -106,6 +106,6 @@ class AppServiceProvider extends ServiceProvider
     }
     public function boot()
     {
-        UserMysql::observe(UserObserver::class);
+        User::observe(UserObserver::class);
     }
 }

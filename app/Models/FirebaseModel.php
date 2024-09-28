@@ -4,7 +4,9 @@ namespace App\Models;
 
 use stdClass;
 use Kreait\Firebase\Factory;
+use InvalidArgumentException;
 use Kreait\Firebase\Database;
+use Google\Cloud\Core\Exception\NotFoundException;
 
 abstract class FirebaseModel
 {
@@ -45,6 +47,21 @@ abstract class FirebaseModel
         $result = $this->reference->getChild($id)->getValue();
         return $result === null ? new stdClass() : (object) $result;
     }
+    
+    public function getKey()
+    {
+        return $this->reference->getKey(); // Assurez-vous que cette ligne est correcte selon votre implémentation
+    }
+
+    public function findOrFail($key)
+    {
+        if (empty($key)) {
+            throw new InvalidArgumentException("La clé ne peut pas être nulle ou vide.");
+        }
+        $childReference = $this->reference->getChild($key);
+        $childReference->getSnapshot();
+        return $key;
+    }
 
     public function create(array $data)
     {
@@ -78,7 +95,7 @@ abstract class FirebaseModel
         return new static;
     }
 
-    public function where($field, $operator, $value)
+    public function where($field, $value, $operator = '=')
     {
         $this->filters[] = [$field, $operator, $value];
         return $this;
@@ -105,11 +122,11 @@ abstract class FirebaseModel
     public function get()
     {
         $result = $this->reference->getValue();
-        
+
         if (!empty($this->filters)) {
             $result = $this->applyFilters($result);
         }
-        
+
         $this->filters = []; // Reset filters
         return $result === null ? [] : $result;
     }
@@ -129,11 +146,11 @@ abstract class FirebaseModel
     {
         $query = $this->reference->orderByChild($field);
         $result = $query->getValue();
-        
+
         if ($direction === 'desc') {
             $result = array_reverse($result);
         }
-        
+
         return $result;
     }
 
@@ -215,24 +232,56 @@ abstract class FirebaseModel
         return (new static)->$method(...$arguments);
     }
 
-    protected function applyFilters($data)
+    public function with($relations)
     {
-        return array_filter($data, function($item) {
-            if (!is_array($item)) {
+        if (!is_array($relations)) {
+            $relations = [$relations];
+        }
+        foreach ($relations as $relation) {
+            if (method_exists($this, $relation)) {
+                $this->$relation();
+            } else {
+                // Si la relation n'est pas une méthode définie, on suppose qu'il s'agit d'une collection liée
+                $relatedData = $this->getReference($relation)->getValue();
+                $this->$relation = $relatedData ? $relatedData : [];
+            }
+        }
+        return $this;
+    }
+
+    public function withCount($relation)
+    {
+        $relatedData = $this->getReference($relation)->getValue();
+        $this->$relation = $relatedData ? $relatedData : [];
+        $this->{$relation . '_count'} = is_array($relatedData) ? count($relatedData) : 0;
+
+        return $this;
+    }
+
+    protected function applyFilters($data)
+{
+    // Vérifier si $data est un tableau
+    if (!is_array($data)) {
+        return []; // Retourner un tableau vide si $data n'est pas un tableau
+    }
+
+    return array_filter($data, function ($item) {
+        if (!is_array($item)) {
+            return false;
+        }
+        foreach ($this->filters as $filter) {
+            [$field, $operator, $value] = $filter;
+            if (!isset($item[$field])) {
                 return false;
             }
-            foreach ($this->filters as $filter) {
-                [$field, $operator, $value] = $filter;
-                if (!isset($item[$field])) {
-                    return false;
-                }
-                if (!$this->evaluateCondition($item[$field], $operator, $value)) {
-                    return false;
-                }
+            if (!$this->evaluateCondition($item[$field], $operator, $value)) {
+                return false;
             }
-            return true;
-        });
-    }
+        }
+        return true;
+    });
+}
+
 
     protected function evaluateCondition($fieldValue, $operator, $value)
     {

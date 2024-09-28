@@ -8,6 +8,6 @@ class ApprenantsFacade extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'apprenants';
+        return 'apprenant.facade';
     }
 }

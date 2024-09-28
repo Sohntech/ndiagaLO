@@ -84,24 +84,6 @@ class ReferentielRepository implements ReferentielRepositoryInterface
         return null;
     }
 
-    public function addCompetenceToReferentiel($referentielId, array $competence)
-    {
-        $competencesRef = ReferentielFacade::getChild($referentielId)->getChild('competences');
-        $competenceRef = $competencesRef->push($competence);
-
-        error_log('Compétence ajoutée : ' . json_encode($competence) . ' avec ID : ' . $competenceRef->getKey());
-
-        return ['id' => $competenceRef->getKey()] + $competence;
-    }
-
-    public function getCompetencesByReferentielId($referentielId)
-    {
-        $competences = ReferentielFacade::getChild($referentielId)->getChild('competences')->getValue() ?? [];
-        error_log('Compétences récupérées pour le référentiel ' . $referentielId . ': ' . json_encode($competences));
-        return $competences;
-    }
-
-
     public function getReferentielById($id)
     {
         $referentiel = $this->find($id);
@@ -109,5 +91,59 @@ class ReferentielRepository implements ReferentielRepositoryInterface
             $referentiel->competences = $this->getCompetencesByReferentielId($id);
         }
         return $referentiel;
+    }
+
+    public function addCompetenceToReferentiel($referentielId, $competenceData)
+    {
+        // Ajouter la compétence au référentiel via son ID
+        $referentiel = ReferentielFacade::find($referentielId);
+        $referentiel->competences()->create($competenceData);
+    }
+
+    // Méthode pour récupérer toutes les compétences d'un référentiel
+    public function getCompetencesByReferentielId($referentielId)
+    {
+        return ReferentielFacade::find($referentielId);
+    }
+
+    // Nouvelle méthode : modifier une compétence
+    public function updateCompetence($competenceId, $updatedData)
+    {
+        $competence = ReferentielFacade::find($competenceId);
+        $competence->update($updatedData);
+    }
+
+    // Nouvelle méthode : supprimer une compétence
+    public function deleteCompetence($competenceId)
+    {
+        $competence = ReferentielFacade::find($competenceId);
+        $competence->delete();
+    }
+
+    // Nouvelle méthode : ajouter un module à une compétence
+    public function addModuleToCompetence($competenceId, $moduleData)
+    {
+        $competence = ReferentielFacade::find($competenceId);
+        $competence->modules()->create($moduleData);
+    }
+
+    // Nouvelle méthode : lister les modules d'une compétence
+    public function getModulesByCompetenceId($competenceId)
+    {
+        return ReferentielFacade::find($competenceId);
+    }
+
+    // Nouvelle méthode : modifier un module
+    public function updateModule($moduleId, $updatedData)
+    {
+        $module = ReferentielFacade::find($moduleId);
+        $module->update($updatedData);
+    }
+
+    // Nouvelle méthode : supprimer un module
+    public function deleteModule($moduleId)
+    {
+        $module = ReferentielFacade::find($moduleId);
+        $module->delete();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UserMysql;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -16,30 +16,6 @@ class AuthController extends Controller
     public function __construct(AuthServiceInterface $authService)
     {
         $this->authService = $authService;
-    }
-
-    public function redirectToProvider($provider)
-    {
-        return Socialite::driver($provider)->redirect();
-    }
-
-    public function handleProviderCallback($provider)
-    {
-        $socialUser = Socialite::driver($provider)->user();
-        
-        $user = UserMysql::where('email', $socialUser->getEmail())->first();
-        
-        if (!$user) {
-            $user = UserMysql::create([
-                'name' => $socialUser->getName(),
-                'email' => $socialUser->getEmail(),
-                // 'password' => Hash::make(str_random(24)),
-            ]);
-        }
-        
-        Auth::login($user);
-        
-        return redirect('/home');
     }
 
     public function login(Request $request)
