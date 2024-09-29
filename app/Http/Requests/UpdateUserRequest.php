@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Rules\EmailRule;
-use App\Models\UserMysql;
+use App\Models\User;
 use App\Rules\TelephoneRule;
 use App\Rules\CustumPasswordRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -12,7 +12,7 @@ class UpdateUserRequest extends FormRequest
 {
     public function authorize()
     {
-        // return $this->user()->can('update',[UserMysql::class, $this->route('fonction')]);
+        // return $this->user()->can('update',[User::class, $this->route('fonction')]);
         return true;
     }
 

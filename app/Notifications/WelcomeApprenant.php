@@ -26,11 +26,11 @@ class WelcomeApprenant extends Notification
     {
         return (new MailMessage)
             ->subject('Bienvenue à la formation')
-            ->line('Bienvenue ' . $this->apprenant->nom . ' ' . $this->apprenant->prenom . '!')
+            ->line('Bienvenue ' . $this->apprenant->prenom . ' ' . $this->apprenant->nom . '!')
             ->line('Voici vos informations de connexion:')
             ->line('Email: ' . $this->apprenant->email)
             ->line('Mot de passe temporaire: ' . $this->apprenant->password)
-            ->action('Activer votre compte', url('/activate-account/' . $this->apprenant->id))
+            ->action('Activer votre compte', url('/activate-account/' . $this->apprenant->email))
             ->line('Merci de vous être inscrit! Veuillez changer votre mot de passe lors de votre première connexion.');
     }
 }

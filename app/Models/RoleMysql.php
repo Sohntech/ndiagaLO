@@ -13,6 +13,6 @@ class RoleMysql extends Model
 
     public function users()
     {
-        return $this->hasMany(UserMysql::class);
+        return $this->hasMany(User::class);
     }
 }

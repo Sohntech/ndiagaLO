@@ -10,9 +10,7 @@ class CreateBlacklistedTokensTable extends Migration
     {
         Schema::create('blacklisted_tokens', function (Blueprint $table) {
             $table->id();
-            $table->string('token')->unique();  
-            $table->enum('type', ['access', 'refresh']);  
-            $table->timestamp('revoked_at')->nullable();;  
+            $table->string('token', 512)->unique();
             $table->timestamps();
         });
     }
@@ -22,4 +20,5 @@ class CreateBlacklistedTokensTable extends Migration
         Schema::dropIfExists('blacklisted_tokens');
     }
 }
+
 

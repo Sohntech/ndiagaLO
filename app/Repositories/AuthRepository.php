@@ -4,14 +4,14 @@ namespace App\Repositories;
 
 use App\Interfaces\AuthRepositoryInterface;
 use App\Models\BlacklistedToken;
-use App\Models\UserMysql;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class AuthRepository implements AuthRepositoryInterface
 {
     public function findUserByRefreshToken(string $refreshToken)
     {
-        return UserMysql::where('refresh_token', $refreshToken)->first();
+        return User::where('refresh_token', $refreshToken)->first();
     }
 
     public function blacklistToken(string $token, string $type)
@@ -25,7 +25,7 @@ class AuthRepository implements AuthRepositoryInterface
 
     public function findUserByCredentials(array $credentials)
     {
-        $user = UserMysql::where('email', $credentials['email'])->first();
+        $user = User::where('email', $credentials['email'])->first();
 
         if ($user) {
             if (Hash::check($credentials['password'], $user->password)) {

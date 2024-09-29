@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\EtatEnum;
-use App\Models\UserMysql;
+use App\Models\User;
 use App\Rules\EmailRule;
 use App\Enums\FonctionState;
 use App\Rules\TelephoneRule;
@@ -14,7 +14,7 @@ class StoreUserRequest extends FormRequest
 {
     public function authorize()
     {
-        // return $this->user()->can('create', [UserMysql::class, $this->input('fonction')]);
+        // return $this->user()->can('create', [User::class, $this->input('fonction')]);
         return true;
     }
 

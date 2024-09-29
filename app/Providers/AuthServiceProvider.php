@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Models\ApprenantFirebase;
-use App\Models\UserMysql;
+use App\Models\User;
 use App\Models\UserFirebase;
 use App\Policies\UserPolicy;
 use Laravel\Passport\Passport;
@@ -16,7 +16,7 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 class AuthServiceProvider extends ServiceProvider
 {
     protected $policies = [
-        UserMysql::class => UserPolicy::class,
+        User::class => UserPolicy::class,
         UserFirebase::class => UserPolicy::class,
         ApprenantFirebase::class => ApprenantsPolicy::class,
     ];

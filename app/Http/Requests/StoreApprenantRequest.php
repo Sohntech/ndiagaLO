@@ -12,7 +12,7 @@ class StoreApprenantRequest extends FormRequest
 {
     public function authorize()
     {
-        // return $this->user()->can('create', [UserMysql::class, $this->input('fonction')]);
+        // return $this->user()->can('create', [User::class, $this->input('fonction')]);
         return true;
     }
 

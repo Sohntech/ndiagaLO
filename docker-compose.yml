@@ -7,7 +7,7 @@ services:
     container_name: app
     volumes:
       - .:/var/www
-      - ./storage/Firebase/gestion-scolaire-75b42-firebase-adminsdk-t4mkq-71dad755d5.json:/var/www/storage/Firebase/gestion-scolaire-75b42-firebase-adminsdk-t4mkq-71dad755d5.json
+      - ./storage/Firebase/firebase_encoded.key:/var/www/storage/Firebase/firebase_encoded.key
     networks:
       - laravel
     env_file: 

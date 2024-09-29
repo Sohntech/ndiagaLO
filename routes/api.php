@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\NoteController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\ApprenantsController;
@@ -12,10 +13,10 @@ Route::post('/refresh', [AuthController::class, 'refresh']);
 
 // Route::middleware(['auth:api', 'blacklisted'])->group(function () {
 Route::post('/logout', [AuthController::class, 'logout']);
-    
+
 Route::apiResource('/users', UserController::class);
-Route::get('/auth/{provider}', [AuthController::class, 'redirectToProvider']);
-Route::get('/auth/{provider}/callback', [AuthController::class, 'handleProviderCallback']);
+Route::get('/users/auth/{provider}', [AuthController::class, 'redirectToProvider']);
+Route::get('/users/auth/{provider}/callback', [AuthController::class, 'handleProviderCallback']);
 
 Route::apiResource('promotions', PromotionController::class);
 Route::get('promotions/encours', [PromotionController::class, 'getPromotionEncours']);
@@ -47,5 +48,12 @@ Route::post('/competences/{competenceId}/modules', [ReferentielController::class
 Route::get('/competences/{competenceId}/modules', [ReferentielController::class, 'getModulesByCompetenceId'])->name('competences.modules.list');
 Route::put('/modules/{moduleId}', [ReferentielController::class, 'updateModule'])->name('modules.update');
 Route::delete('/modules/{moduleId}', [ReferentielController::class, 'deleteModule'])->name('modules.delete');
+
+Route::post('notes/modules/{id}', [NoteController::class, 'addNotesToModule']);
+Route::post('notes/apprenants', [NoteController::class, 'addNotesToApprenant']);
+Route::patch('notes/apprenants/{id}', [NoteController::class, 'updateApprenantNotes']);
+Route::get('notes/referentiels/{id}', [NoteController::class, 'getNotesForReferentiel']);
+Route::get('notes/export/referentiels/{id}', [NoteController::class, 'exportNotesReferentiel']);
+Route::get('notes/export/apprenants/{id}', [NoteController::class, 'exportNotesApprenant']);
 
 // });

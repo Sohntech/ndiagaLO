@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use stdClass;
+use Exception;
 use Kreait\Firebase\Factory;
 use InvalidArgumentException;
 use Kreait\Firebase\Database;
@@ -26,10 +27,16 @@ abstract class FirebaseModel
 
     protected function getDatabase(): Database
     {
-        $factory = (new Factory())
-            ->withDatabaseUri(config('database.connections.firebase.database'))
-            ->withServiceAccount(config('database.connections.firebase.credentials'));
-        return $factory->createDatabase();
+        $firebaseCredentialsBase64 = file_get_contents(config('database.connections.firebase.credentials'));
+        $firebaseCredentialsJson = base64_decode($firebaseCredentialsBase64);
+        $temporaryFilePath = sys_get_temp_dir() . '/firebase_credentials.json';
+        file_put_contents($temporaryFilePath, $firebaseCredentialsJson);
+        $factory = (new Factory)
+            ->withServiceAccount($temporaryFilePath)
+            ->withDatabaseUri(config('database.connections.firebase.database'));
+        $database = $factory->createDatabase();
+        unlink($temporaryFilePath);
+        return $database;
     }
 
     public function getReference($collection)
@@ -39,7 +46,10 @@ abstract class FirebaseModel
 
     public function all()
     {
-        return $this->reference->getValue();
+        $data = $this->reference->getValue();
+        return is_array($data) ? array_filter($data, function ($value) {
+            return $value !== null;
+        }) : [];
     }
 
     public function find($id)
@@ -47,7 +57,7 @@ abstract class FirebaseModel
         $result = $this->reference->getChild($id)->getValue();
         return $result === null ? new stdClass() : (object) $result;
     }
-    
+
     public function getKey()
     {
         return $this->reference->getKey(); // Assurez-vous que cette ligne est correcte selon votre implémentation
@@ -259,28 +269,28 @@ abstract class FirebaseModel
     }
 
     protected function applyFilters($data)
-{
-    // Vérifier si $data est un tableau
-    if (!is_array($data)) {
-        return []; // Retourner un tableau vide si $data n'est pas un tableau
-    }
+    {
+        // Vérifier si $data est un tableau
+        if (!is_array($data)) {
+            return []; // Retourner un tableau vide si $data n'est pas un tableau
+        }
 
-    return array_filter($data, function ($item) {
-        if (!is_array($item)) {
-            return false;
-        }
-        foreach ($this->filters as $filter) {
-            [$field, $operator, $value] = $filter;
-            if (!isset($item[$field])) {
+        return array_filter($data, function ($item) {
+            if (!is_array($item)) {
                 return false;
             }
-            if (!$this->evaluateCondition($item[$field], $operator, $value)) {
-                return false;
+            foreach ($this->filters as $filter) {
+                [$field, $operator, $value] = $filter;
+                if (!isset($item[$field])) {
+                    return false;
+                }
+                if (!$this->evaluateCondition($item[$field], $operator, $value)) {
+                    return false;
+                }
             }
-        }
-        return true;
-    });
-}
+            return true;
+        });
+    }
 
 
     protected function evaluateCondition($fieldValue, $operator, $value)

@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Note;
 use App\Models\User;
 use Cloudinary\Cloudinary;
 use App\Models\UserFirebase;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Storage;
+use App\Services\NoteService;
 use App\Services\UserService;
 use App\Observers\UserObserver;
 use App\Models\ApprenantFirebase;
@@ -14,16 +16,19 @@ use App\Models\PromotionFirebase;
 use App\Services\PromotionService;
 use App\Models\ReferentielFirebase;
 use App\Services\ApprenantsService;
+use App\Repositories\NoteRepository;
 use App\Repositories\UserRepository;
 use App\Services\ReferentielService;
 use App\Services\LocalStorageService;
 use Illuminate\Support\ServiceProvider;
+use App\Interfaces\NoteServiceInterface;
 use App\Interfaces\UserServiceInterface;
 use App\Services\FirebaseStorageService;
 use App\Interfaces\UserFirebaseInterface;
 use App\Repositories\PromotionRepository;
 use App\Repositories\ApprenantsRepository;
 use App\Services\CloudinaryStorageService;
+use App\Interfaces\NoteRepositoryInterface;
 use App\Interfaces\UserRepositoryInterface;
 use App\Repositories\ReferentielRepository;
 use App\Interfaces\ApprenantsModelInterface;
@@ -68,6 +73,12 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ApprenantsRepositoryInterface::class, ApprenantsRepository::class);
         $this->app->bind('apprenant.facade', function ($app) {
             return $app->make(ApprenantsModelInterface::class);
+        });
+
+        $this->app->bind(NoteRepositoryInterface::class, NoteRepository::class);
+        $this->app->bind(NoteServiceInterface::class, NoteService::class);
+        $this->app->bind(NoteRepositoryInterface::class, function ($app) {
+            return new NoteRepository($app->make(Note::class));
         });
 
         $this->app->singleton(LocalStorageService::class);

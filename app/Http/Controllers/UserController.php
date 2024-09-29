@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\UserMysql;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Exceptions\UserException;
 use Illuminate\Support\Facades\Gate;
@@ -15,7 +15,7 @@ class UserController extends Controller
     public function __construct(UserServiceInterface $userService)
     {
         $this->userService = $userService;
-        // $this->authorizeResource(UserMysql::class, 'user');
+        // $this->authorizeResource(User::class, 'user');
     }
 
     public function index(Request $request)
@@ -26,7 +26,7 @@ class UserController extends Controller
     public function store(StoreUserRequest $request)
     {
         $fonction = $request->input('fonction');
-        if (Gate::allows('create', [UserMysql::class, $fonction]));
+        if (Gate::allows('create', [User::class, $fonction]));
         $data = $request->validated();
         $user = $this->userService->createUser($data);
         throw UserException::userCreated($user);

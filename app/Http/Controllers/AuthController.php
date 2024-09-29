@@ -18,6 +18,30 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
+    public function redirectToProvider($provider)
+    {
+        return Socialite::driver($provider)->redirect();
+    }
+
+    public function handleProviderCallback($provider)
+    {
+        $socialUser = Socialite::driver($provider)->user();
+        
+        $user = User::where('email', $socialUser->getEmail())->first();
+        
+        if (!$user) {
+            $user = User::create([
+                'name' => $socialUser->getName(),
+                'email' => $socialUser->getEmail(),
+                // 'password' => Hash::make(str_random(24)),
+            ]);
+        }
+        
+        Auth::login($user);
+        
+        return redirect('/home');
+    }
+
     public function login(Request $request)
     {
         $credentials = $request->validate([
