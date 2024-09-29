@@ -18,7 +18,7 @@ WORKDIR /var/www
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 # Expose port 9000 for PHP-FPM
-EXPOSE 9000
+EXPOSE 9321
 
 # Add a healthcheck for PHP-FPM
 HEALTHCHECK --interval=30s --timeout=10s \
