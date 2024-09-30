@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
     zip \
-    postgresql-client \   
+    postgresql-client \
     && docker-php-ext-install pdo pdo_pgsql zip
 
 # Installe Composer
@@ -27,12 +27,8 @@ RUN composer install --ignore-platform-req=ext-mongodb --ignore-platform-req=ext
 # Permissions pour le stockage et le cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Copie le script de démarrage
-COPY start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
-
 # Expose le port 9000 pour PHP-FPM
 EXPOSE 9000
 
-# Lancer le script de démarrage quand le conteneur démarre
-CMD ["sh", "/usr/local/bin/start.sh"]
+# Lancer le serveur PHP-FPM par défaut
+CMD ["php-fpm"]
