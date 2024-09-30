@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     zip \
     nginx \
-    postgresql-client \   
+    postgresql-client \
     && docker-php-ext-install pdo pdo_pgsql zip
 
 # Configurer Nginx
@@ -37,7 +37,7 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
-# Expose le port 80 pour Nginx et le port 9000 pour PHP-FPM
+# Expose les ports pour Nginx et PHP-FPM
 EXPOSE 80
 EXPOSE 9000
 
