@@ -7,7 +7,7 @@ services:
     container_name: Gestion-App-Laravel
     volumes:
       - .:/var/www
-      - ./gestion-ecole-laravel-firebase.json:/home/dev/Documents/gestion_scolaire_V2_Last/storage/firebase/firebase_reencoded.key
+      - ./gestion-pedagogique-laravel.json:/home/ndiaga-lo/Musique/last-day-of-laravel/storage/Firebase/firebase_encoded.key
     networks:
       - app-network
     depends_on:
@@ -19,7 +19,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx:/etc/nginx/conf.dz
+      - ./nginx:/etc/nginx/conf.d
       - .:/var/www
     depends_on:
       - app
