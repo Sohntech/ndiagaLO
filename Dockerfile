@@ -28,7 +28,7 @@ WORKDIR /var/www/html
 COPY . .
 
 # Installe les dépendances PHP
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --ignore-platform-req=ext-mongodb --ignore-platform-req=ext-gd --no-dev --optimize-autoloader 
 
 # Permissions pour le stockage et le cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache

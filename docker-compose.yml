@@ -11,7 +11,7 @@ services:
     networks:
       - app-network
     depends_on:
-      - postgres
+      - db
 
   webserver:
     image: nginx:latest
