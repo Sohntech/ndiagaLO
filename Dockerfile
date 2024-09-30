@@ -1,28 +1,51 @@
-# Use an official PHP image with FPM (FastCGI Process Manager)
-FROM php:8.3-fpm-alpine
+FROM php:8.3-fpm
 
-# Install necessary dependencies and extensions
-RUN apk update && apk add --no-cache \
-    libzip-dev zip unzip git curl libpng-dev libjpeg-turbo-dev freetype-dev \
-    bash gcc g++ make autoconf openssl-dev \
+# Installation des dépendances système et des extensions PHP
+RUN apt-get update && apt-get install -y \
+    libzip-dev \
+    zip \
+    unzip \
+    git \
+    curl \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libpq-dev \
+    # Installation de l'extension MongoDB
+    libcurl4-openssl-dev \
+    libssl-dev \
+    pkg-config \
+    && pecl install mongodb \
+    && docker-php-ext-enable mongodb \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql zip
+    && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql pdo_pgsql zip opcache
 
-# Copy project files
-COPY . /var/www
+# Installation de Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set the working directory
+# Définition du répertoire de travail
 WORKDIR /var/www
 
-# Ensure the 'www-data' user has the correct permissions
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+# Copie des fichiers du projet
+COPY . /var/www
 
-# Expose port 9000 for PHP-FPM
+# Installation des dépendances PHP
+RUN composer install --no-dev --optimize-autoloader
+
+# Configuration des permissions
+RUN mkdir -p /var/www/storage/logs /var/www/bootstrap/cache \
+    && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
+    && chmod -R 777 /var/www/storage /var/www/bootstrap/cache
+
+# Nettoyage
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Exposition du port
 EXPOSE 9321
 
-# Add a healthcheck for PHP-FPM
-HEALTHCHECK --interval=30s --timeout=10s \
-  CMD curl --fail http://localhost:9000 || exit 1
+# Copie et configuration du script de démarrage
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
-# Start PHP-FPM
+# Commande de démarrage
 CMD ["php-fpm"]

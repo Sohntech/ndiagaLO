@@ -16,6 +16,7 @@ use App\Models\PromotionFirebase;
 use App\Services\PromotionService;
 use App\Models\ReferentielFirebase;
 use App\Services\ApprenantsService;
+use App\Services\EmargementService;
 use App\Repositories\NoteRepository;
 use App\Repositories\UserRepository;
 use App\Services\ReferentielService;
@@ -27,6 +28,7 @@ use App\Services\FirebaseStorageService;
 use App\Interfaces\UserFirebaseInterface;
 use App\Repositories\PromotionRepository;
 use App\Repositories\ApprenantsRepository;
+use App\Repositories\EmargementRepository;
 use App\Services\CloudinaryStorageService;
 use App\Interfaces\NoteRepositoryInterface;
 use App\Interfaces\UserRepositoryInterface;
@@ -35,12 +37,14 @@ use App\Interfaces\ApprenantsModelInterface;
 use App\Services\CloudStorageServiceFactory;
 use App\Interfaces\PromotionServiceInterface;
 use App\Interfaces\ApprenantsServiceInterface;
+use App\Interfaces\EmargementServiceInterface;
 use App\Interfaces\PromotionFirebaseInterface;
 use App\Interfaces\ReferentielServiceInterface;
 use App\Interfaces\CloudStorageServiceInterface;
 use App\Interfaces\PromotionRepositoryInterface;
 use App\Interfaces\ReferentielFirebaseInterface;
 use App\Interfaces\ApprenantsRepositoryInterface;
+use App\Interfaces\EmargementRepositoryInterface;
 use App\Interfaces\ReferentielRepositoryInterface;
 
 class AppServiceProvider extends ServiceProvider
@@ -81,6 +85,9 @@ class AppServiceProvider extends ServiceProvider
             return new NoteRepository($app->make(Note::class));
         });
 
+        $this->app->bind(EmargementRepositoryInterface::class, EmargementRepository::class);
+        $this->app->bind(EmargementServiceInterface::class, EmargementService::class);
+        
         $this->app->singleton(LocalStorageService::class);
         $this->app->bind(CloudStorageServiceInterface::class, function ($app) {
             return CloudStorageServiceFactory::make();
