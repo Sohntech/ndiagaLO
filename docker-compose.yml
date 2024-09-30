@@ -10,7 +10,11 @@ services:
       - ./gestion-pedagogique-laravel.json:/home/ndiaga-lo/Musique/last-day-of-laravel/storage/Firebase/firebase_encoded.key
     networks:
       - app-network
-  
+    expose:
+      - "9000" # Expose PHP-FPM pour que Nginx puisse s'y connecter
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
 
   webserver:
     image: nginx:latest
@@ -34,7 +38,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
- 
+
 volumes:
   postgres_data:
 
