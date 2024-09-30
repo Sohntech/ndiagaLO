@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   app:
     build:
@@ -9,17 +10,14 @@ services:
       - ./gestion-ecole-laravel-firebase.json:/home/dev/Documents/gestion_scolaire_V2_Last/storage/firebase/firebase_reencoded.key
     networks:
       - app-network
-    expose:
-      - "9000"
     depends_on:
-      - db
       - postgres
 
   webserver:
     image: nginx:latest
     container_name: Gestion-App-nginx
     ports:
-      - "9321:80"
+      - "80:80"
     volumes:
       - ./nginx:/etc/nginx/conf.dz
       - .:/var/www
@@ -29,33 +27,18 @@ services:
       - app-network
 
   db:
-    image: mysql:8.0
-    container_name: laravel_mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: re@louZ01
-      MYSQL_DATABASE: Projet_Scolaire
-      MYSQL_USER: diedhiouousseynou53
-      MYSQL_PASSWORD: re@louZ01
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - app-network
-
-  postgres:
-    image: postgres:latest
+    image: postgres:14.13
     container_name: laravel_postgres
-    restart: always
     environment:
-      POSTGRES_USER: diedhiouousseynou53
-      POSTGRES_PASSWORD: re@louZ01
-      POSTGRES_DB: projet_scolaire
+      POSTGRES_DB: lastdayoflaravel
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
-
+ 
 volumes:
-  mysql_data:
   postgres_data:
 
 networks:
